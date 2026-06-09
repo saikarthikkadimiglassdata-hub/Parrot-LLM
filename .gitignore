@@ -1,6 +1,12 @@
 venv/
+medical_env/
+cuda_env/
+env/
+ENV/
 .env
+.env.*
 __pycache__/
 *.pyc
+*.log
 .DS_Store
 

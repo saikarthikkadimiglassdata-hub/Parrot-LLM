@@ -53,3 +53,9 @@ The server will start at `http://localhost:8001`.
 - **GET `/health`**: Returns service and LLM connection status.
 - **POST `/advice`**: Generates real-time patient guidance.
 - **POST `/summary`**: Generates post-consultation documentation.
+
+## 📖 API Documentation (Swagger)
+
+Because this backend is built with FastAPI, interactive API documentation is automatically generated for you. While the server is running, you can explore and test all HTTP endpoints directly from your browser:
+- **Swagger UI:** Navigate to [http://localhost:8001/docs](http://localhost:8001/docs)
+- **ReDoc:** Navigate to [http://localhost:8001/redoc](http://localhost:8001/redoc)

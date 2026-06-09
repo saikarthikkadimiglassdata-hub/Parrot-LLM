@@ -39,6 +39,7 @@ class SessionSummaryRequest(BaseModel):
     transcript: str = Field(..., description="Full consultation transcript")
     observations: List[ObservationItem] = Field(default=[], description="List of recorded observations")
     telemetry_summary: Dict[str, Any] = Field(default={}, description="Aggregated metrics summary")
+    pve_clinical_analysis: Optional[Dict[str, Any]] = Field(default=None, description="Patient Voice Extraction clinical analysis results")
 
 @app.get("/health")
 def health_check():
@@ -76,7 +77,8 @@ def post_session_summary(request: SessionSummaryRequest):
             session_duration=request.session_duration_seconds,
             transcript=request.transcript,
             observations=[obs.dict() for obs in request.observations],
-            telemetry_summary=request.telemetry_summary
+            telemetry_summary=request.telemetry_summary,
+            pve_clinical_analysis=request.pve_clinical_analysis
         )
         return summary_res
     except Exception as e:

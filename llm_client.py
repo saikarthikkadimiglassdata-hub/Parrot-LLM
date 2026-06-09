@@ -21,7 +21,7 @@ class ParrotLLMClient:
             logger.warning("GROQ_API_KEY environment variable is not set!")
         self.client = Groq(api_key=self.api_key) if self.api_key else None
         # Default model recommended for general text + speed
-        self.model = "llama-3.3-70b-versatile"
+        self.model = "llama-3.1-8b-instant"
 
     def get_live_advice(self, telemetry: Dict[str, Any], transcript: str, session_duration: int) -> Dict[str, Any]:
         """
@@ -34,9 +34,12 @@ class ParrotLLMClient:
                 "urgency": "normal"
             }
 
+        # Truncate transcript to last 1000 characters to prevent burning through rate limits
+        truncated_transcript = transcript[-1000:] if transcript else ""
+        
         user_content = json.dumps({
             "telemetry": telemetry,
-            "transcript": transcript,
+            "recent_transcript": truncated_transcript,
             "session_duration_seconds": session_duration
         }, indent=2)
 
@@ -65,7 +68,7 @@ class ParrotLLMClient:
                 "urgency": "normal"
             }
 
-    def get_session_summary(self, session_duration: int, transcript: str, observations: list, telemetry_summary: Dict[str, Any]) -> Dict[str, Any]:
+    def get_session_summary(self, session_duration: int, transcript: str, observations: list, telemetry_summary: Dict[str, Any], pve_clinical_analysis: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Generates clinical post-session documentation.
         """
@@ -77,11 +80,15 @@ class ParrotLLMClient:
                 "recommendations": ["Add GROQ_API_KEY to the Parrot-LLM .env file."]
             }
 
+        # Truncate transcript to last 4000 chars for summary to avoid context limits
+        truncated_transcript = transcript[-4000:] if transcript else ""
+
         user_content = json.dumps({
             "session_duration_seconds": session_duration,
-            "transcript": transcript,
-            "observations": observations,
-            "telemetry_summary": telemetry_summary
+            "transcript": truncated_transcript,
+            "observations_count": len(observations) if observations else 0,
+            "telemetry_summary": telemetry_summary,
+            "pve_clinical_analysis": pve_clinical_analysis
         }, indent=2)
 
         try:
